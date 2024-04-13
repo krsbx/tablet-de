@@ -1,0 +1,144 @@
+#!/usr/bin/env node
+
+const fs = require("node:fs");
+const os = require("node:os");
+const path = require("node:path");
+const { promisify } = require("node:util");
+const { execSync } = require("node:child_process");
+
+const execa = promisify(execSync);
+const writeFileAsync = promisify(fs.writeFile);
+
+/**
+ * @typedef {Object} Asset
+ * @property {string} url
+ * @property {string} id
+ * @property {string} node_id
+ * @property {string} name
+ * @property {string} label
+ * @property {object} uploader
+ * @property {string} content_type
+ * @property {string} state
+ * @property {number} size
+ * @property {number} download_count
+ * @property {string} created_at
+ * @property {string} updated_at
+ * @property {string} browser_download_url
+ */
+
+/**
+ * @description Fetches the latest release from GitHub
+ * @returns {Promise<Asset[]>} List of assets.
+ */
+async function getReleases() {
+  const response = await fetch(
+    "https://api.github.com/repos/coder/code-server/releases/latest"
+  );
+  const json = await response.json();
+
+  if (!json.assets || !Array.isArray(json.assets) || !json.assets.length) {
+    throw new Error("No assets found");
+  }
+
+  /** @type {Asset[]} */
+  const assets = json.assets;
+
+  return assets;
+}
+
+/**
+ * @description Get the download url from the given name pattern
+ * @param {RegExp} pattern
+ * @param {Asset[]} assets
+ * @returns {string | undefined}
+ */
+function getDownloadUrl(pattern, assets) {
+  return assets.find((asset) => asset.name.match(pattern))
+    ?.browser_download_url;
+}
+
+/**
+ * @description Symlink code server from the given path
+ * @param {string} symlinkSrc
+ * @param {string} symlinkDest
+ */
+function symlinkCodeServer(symlinkSrc, symlinkDest) {
+  const symlinkStats = fs.lstatSync(symlinkDest);
+
+  if (symlinkStats.isSymbolicLink()) {
+    console.log("Removing existing symlink...");
+
+    fs.rmSync(symlinkDest);
+  }
+
+  console.log("Creating new symlink...");
+
+  fs.symlinkSync(symlinkSrc, symlinkDest);
+
+  console.log("Done!");
+}
+
+/**
+ * @description Download the given asset and stored to the given location
+ * @param {string} url
+ * @param {string} extension
+ * @param {string} targetDir
+ * @param {string} filename
+ */
+async function downloadAsset(url, extension, targetDir, filename) {
+  const response = await fetch(url);
+  const blob = await response.blob();
+  const buffer = await blob.arrayBuffer();
+  const data = Buffer.from(buffer);
+  const tmpDest = path.join(os.tmpdir(), `${filename}${extension}`);
+
+  // Write the file in the temporary directory
+  await writeFileAsync(tmpDest, data);
+
+  // Extract the downloaded file to the target directory using tar
+  await execa(`tar -xzf "${tmpDest}" -C "${targetDir}"`);
+}
+
+async function main() {
+  const releases = await getReleases();
+  const pattern = /\\*-arm64\.tar\.gz/;
+  const url = getDownloadUrl(pattern, releases);
+  const homedir = os.homedir();
+  const baseDir = path.join(homedir, ".codes");
+  const symlinkDest = path.join(homedir, "bin/code-server");
+
+  if (!url) {
+    console.log("No asset candidate to be downloaded");
+    return;
+  }
+
+  const filename = path.basename(url).replace(/\.tar\.gz/, "");
+  const targetDir = path.join(baseDir, filename);
+  const symlinkSrc = path.join(targetDir, "bin/code-server");
+
+  if (!fs.existsSync(baseDir)) {
+    fs.mkdirSync(baseDir);
+  }
+
+  if (fs.existsSync(targetDir)) {
+    console.log("Downloaded file already exists");
+
+    console.log("Symlinking instead...");
+
+    symlinkCodeServer(symlinkSrc, symlinkDest);
+
+    return;
+  }
+
+  console.log("Downloading latest release...");
+
+  // Download the assets
+  // => Extract the assets on the baseDir
+  await downloadAsset(url, ".tar.gz", baseDir, filename);
+
+  console.log("Download complete");
+
+  symlinkCodeServer(symlinkSrc, symlinkDest);
+}
+
+main();
