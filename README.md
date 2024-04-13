@@ -1,5 +1,7 @@
 # Tablet Development Environment
 
+![code-updater](./assets/code-updater.jpg)
+
 ## Getting Started
 
 1. To get started using your android tablet as development environment, download and install [Termux](https://f-droid.org/en/packages/com.termux/) from [F-Droid](https://f-droid.org/en/packages/com.termux/).
