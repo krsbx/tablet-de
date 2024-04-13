@@ -1,0 +1,3 @@
+#!/bin/sh
+
+proot-distro login ${1:-"ubuntu"}
