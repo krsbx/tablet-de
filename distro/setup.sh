@@ -1,10 +1,13 @@
 #!/bin/sh
 
+CURRENT_PATH=$(realpath $0)
+CURRENT_PATH=$(dirname $CURRENT_PATH)
+
 # Setup Termux bin so it can load any script in it
-"$(pwd)/../termux/bin.sh"
+"$CURRENT_PATH/../termux/bin.sh"
 
 # Install NVM and install latest node LTS
-"$(pwd)/nvm.sh"
+"$CURRENT_PATH/nvm.sh"
 
 # Setup code-server downloader and code-server runner
-"$(pwd)/code-server.sh"
+"$CURRENT_PATH/code-server.sh"

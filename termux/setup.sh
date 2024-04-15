@@ -1,16 +1,19 @@
 #!/bin/sh
 
+CURRENT_PATH=$(realpath $0)
+CURRENT_PATH=$(dirname $CURRENT_PATH)
+
 # Setup Termux bin so it can load any script in it
-"$(pwd)/bin.sh"
+"$CURRENT_PATH/bin.sh"
 
 # Setup distro comands
-"$(pwd)/distro.sh"
+"$CURRENT_PATH/distro.sh"
 
 # Install necessary packages
-"$(pwd)/install.sh"
+"$CURRENT_PATH/install.sh"
 
 # Install ubuntu
-"$(pwd)/ubuntu.sh"
+"$CURRENT_PATH/ubuntu.sh"
 
 if [ -n "$ZSH_VERSION" ]; then
    source $HOME/.zshrc

@@ -63,12 +63,22 @@ function getDownloadUrl(pattern, assets) {
  * @param {string} symlinkDest
  */
 function symlinkCodeServer(symlinkSrc, symlinkDest) {
-  const symlinkStats = fs.lstatSync(symlinkDest);
-
-  if (symlinkStats.isSymbolicLink()) {
+  if (fs.existsSync(symlinkDest)) {
     console.log("Removing existing symlink...");
 
     fs.rmSync(symlinkDest);
+  }
+
+  try {
+    const symlinkStats = fs.lstatSync(symlinkDest);
+
+    if (symlinkStats.isSymbolicLink()) {
+      console.log("Removing existing symlink...");
+
+      fs.rmSync(symlinkDest);
+    }
+  } catch {
+    console.log("No existing symlink to be removed...");
   }
 
   console.log("Creating new symlink...");
