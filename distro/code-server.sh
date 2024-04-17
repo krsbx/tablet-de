@@ -1,13 +1,16 @@
 #!/bin/sh
 
+CURRENT_PATH=$(realpath $0)
+CURRENT_PATH=$(dirname $CURRENT_PATH)
+
 echo "Copying code-server updater to \$HOME/bin"
 
-cp code-updater $HOME/bin/code-updater
+cp $CURRENT_PATH/code-updater $HOME/bin/code-updater
 chmod +x $HOME/bin/code-updater
 
 echo "Copying code-server runner to \$HOME/bin"
 
-cp code $HOME/bin/code
+cp $CURRENT_PATH/code $HOME/bin/code
 chmod +x $HOME/bin/code
 
 export NVM_DIR="$HOME/.nvm"
