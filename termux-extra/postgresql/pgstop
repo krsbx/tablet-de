@@ -1,0 +1,3 @@
+#!/bin/sh
+
+pg_ctl stop -D $PREFIX/var/lib/postgresql > /dev/null 2>&1 &

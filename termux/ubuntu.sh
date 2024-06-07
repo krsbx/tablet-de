@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Installing ubuntu distro
-DISTROS=/data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs
+DISTROS=$PREFIX/var/lib/proot-distro/installed-rootfs
 
 if [ -d "$DISTROS/ubuntu" ]; then
   echo "ubuntu already installed"

@@ -36,41 +36,35 @@ source ~/.bashrc
 distro
 ```
 
-7. Clone this repo again
-
-```sh
-git clone https://github.com/krsbx/tablet-de.git
-```
-
-8. Run setup scripts from the distro folder
+7. Run setup scripts from the distro folder
 
 ```sh
 cd tablet-de/distro && ./setup.sh
 ```
 
-9. Update your bash variables
+8. Update your bash variables
 
 ```sh
 source ~/.bashrc
 ```
 
-10. Start the code server
+9. Start the code server
 
 ```sh
 code-server
 ```
 
-11. Stop the code server after few seconds by pression `ctrl+c`
+10. Stop the code server after few seconds by pression `ctrl+c`
 
-12. Change the code-server password in `$HOME/.config/code-server/config.yml`
+11. Change the code-server password in `$HOME/.config/code-server/config.yml`
 
-13. Start the code server in the background
+12. Start the code server in the background
 
 ```sh
 code
 ```
 
-14. Access your code server from your browser [http://localhost:8080](http://localhost:8080)
+13. Access your code server from your browser [http://localhost:8080](http://localhost:8080)
 
 ## Extras
 
@@ -79,7 +73,7 @@ code
 1. In your termux terminal, simply run the following command
 
 ```
-cd tablet-de/termux-extra/postgresql.sh
+bash tablet-de/termux-extra/postgresql/setup.sh
 ```
 
 2. Run `pgstart` to start the postgres server and `pgstop` to stop the server
@@ -89,10 +83,20 @@ cd tablet-de/termux-extra/postgresql.sh
 1. In your termux terminal, simply run the following command
 
 ```
-cd tablet-de/termux-extra/redis.sh
+bash tablet-de/termux-extra/redis/setup.sh
 ```
 
 2. Run `redis-start` to start the redis server and `redis-stop` to stop the server
+
+### Installing Docker
+
+1. In your termux terminal, simply run the following command
+
+```
+bash tablet-de/termux-extra/docker/setup.sh
+```
+
+2. Follow the detailed instructions on `tablet-de/termux-extra/docker/README.md`
 
 ## Help
 
